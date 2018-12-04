@@ -1,0 +1,43 @@
+package com.jhc;
+
+public class AVLTree<T extends Comparable> {
+	private AVLNode<T> root = new AVLNode<T>(null);
+	class AVLNode<T>{
+		T data;
+		AVLNode<T> parent;
+		AVLNode<T> left;
+		AVLNode<T> right;
+		int depth;
+		int balance;
+		public AVLNode(T data){
+			this.data = data;
+			depth = 1;
+			balance = 0;
+			left = null;
+			right = null;
+			
+		}
+//		public AVLNode(AVLNode left,AVLNode right,T data){
+//			
+//		}
+//		public AVLNode(AVLNode left,AVLNode right,T data,int depth){
+//			
+//		}
+	}
+	public void insert(T data){
+		root = insert(data,root);
+	}
+	private AVLNode<T> insert(T data,AVLNode<T> root){
+		if(root == null){
+			return new AVLNode(data);
+		}
+		int result = data.compareTo(root.data);
+		if(result < 0){
+			root.left = insert(data,root.left);
+		}else if(result > 0){
+			root.right = insert(data,root.right);
+		}
+		
+		return root;
+	}
+}

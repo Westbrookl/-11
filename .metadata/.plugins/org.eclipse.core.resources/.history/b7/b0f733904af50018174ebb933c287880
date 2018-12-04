@@ -1,0 +1,8 @@
+package com.jhc.¶þ²æËÑË÷Ê÷;
+
+public class Test {
+	BinarySearchTree<Integer> bst = new BinarySearchTree<>();
+	
+	bst.insert
+	
+}

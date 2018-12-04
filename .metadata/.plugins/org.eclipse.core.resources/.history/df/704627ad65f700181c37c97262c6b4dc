@@ -1,0 +1,8 @@
+package com.jhc;
+
+public class TestAVLNode {
+	public static void main(String[] args){
+		AVLTree<Integer> tree = new AVLTree();
+		tree.insert(5);
+	}
+}
