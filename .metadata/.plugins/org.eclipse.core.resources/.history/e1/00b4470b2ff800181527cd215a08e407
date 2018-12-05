@@ -1,0 +1,21 @@
+package com.jhc.test2;
+
+public class AVLTree<T extends Comparable> {
+	class AVLNode<T extends Comparable>{
+		T data;
+		AVLNode<T> parent;
+		AVLNode<T> left;
+		AVLNode<T> right;
+		int depth;
+		int balance;
+		public AVLNode(T data){
+			this.data = data;
+			left = null;
+			right = null;
+			depth = 1;
+			balance = 0;
+			
+		}
+	}
+
+}

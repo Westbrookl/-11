@@ -1,0 +1,267 @@
+package com.jhc;
+
+public class AVLTree<T extends Comparable> {
+	private AVLNode<T> root = null;
+	class AVLNode<T>{
+		T data;
+		AVLNode<T> parent;
+		AVLNode<T> left;
+		AVLNode<T> right;
+		int depth;
+		int balance;
+		public AVLNode(T data){
+			this.data = data;
+			depth = 1;
+			balance = 0;
+			left = null;
+			right = null;
+			
+		}
+//		public AVLNode(AVLNode left,AVLNode right,T data){
+//			
+//		}
+//		public AVLNode(AVLNode left,AVLNode right,T data,int depth){
+//			
+//		}
+	}
+	public void insert(T data){
+		root = insert(data,root);
+	}
+	private AVLNode<T> insert(T data,AVLNode<T> root){
+		if(root == null){
+			return new AVLNode<T>(data);
+		}
+		@SuppressWarnings("unchecked")
+		int result = data.compareTo(root.data);
+//		int result = data.compareTo(root.data);
+		if(result < 0){
+			root.left = insert(data,root.left);
+		}else if(result > 0){
+			root.right = insert(data,root.right);
+		}
+		/**
+		 * 加入左旋右旋的东西
+		 */
+		root.balance = calBalance(root);
+		if(root.balance >= 2){
+			if(root.left.balance == -1){
+				leftRotate(root.left);
+			}
+			rightRotate(root);
+		}
+		if(root.balance <= -2){
+			if(root.right.balance == -1){
+				rightRotate(root.right);
+			}
+			leftRotate(root);
+		}
+		root.balance = calBalance(root);
+		root.depth = calDepth(root);
+		return root;
+	}
+	/**
+	 * 左旋
+	 * 右子为父
+	 * 父变左子
+	 * 左子孙变右子孙
+	 * @param root
+	 */
+	private void leftRotate(AVLNode<T> root){
+		AVLNode<T> rightSon = root.right,rootParent = root.parent;
+		AVLNode<T> leftGrandSon = root.right.left;
+		/**
+		 * 右子为父
+		 */
+		rightSon.parent = rootParent;
+		if(rootParent!=null){
+			if(rootParent.left == root){
+				rootParent.left = rightSon;
+			}else if(rootParent.right == root){
+				rootParent.right = rightSon;
+			}
+		}
+		rightSon.left = root;
+		root.parent = rightSon;//更新当前节点父亲
+		/**
+		 * 左孙子变成右孙子
+		 */
+		root.right = leftGrandSon;
+		if(leftGrandSon != null){
+			leftGrandSon.parent = root;
+		}
+		
+		root.depth = calDepth(root);
+		root.balance = calBalance(root);
+		/**
+		 * 更新当前父节点的深度与平衡因子
+		 */
+		rightSon.depth = calDepth(rightSon);
+		rightSon.balance = calBalance(rightSon);
+	}
+	/**
+	 * 右旋的口诀是
+	 * 左子变父
+	 * 父变右子
+	 * 右孙变左孙
+	 * 
+	 * @param root
+	 */
+	private void rightRotate(AVLNode<T> root){
+		AVLNode<T> parent = root.parent,leftSon = root.left;
+		AVLNode<T> leftGrandSon = root.left.right;
+		/**
+		 * 左子变父，父变右子
+		 */
+		leftSon.parent = parent;
+//		leftSon.right = root;
+		if(parent != null){
+			if( root == parent.left){
+				parent.left = leftSon;
+			}else if( root == parent.right){
+				parent.right = leftSon;
+			}
+		}
+		leftSon.right = root;
+		root.parent = leftSon;
+		/**
+		 * 右孙子变成左孙子
+		 */
+		root.left = leftGrandSon;
+		if(leftGrandSon != null){
+			leftGrandSon.parent = root;
+		}
+		root.depth = calDepth(root);
+		root.balance = calBalance(root);
+		/**
+		 * 更新新的父节点的深度与平衡因子
+		 */
+		leftSon.depth = calDepth(root);
+		leftSon.depth = calBalance(root);
+		
+	}
+	/**
+	 * 计算平衡因子的时候也需要考虑左右节点是不是为null
+	 * 
+	 * @param root
+	 * @return
+	 */
+	private int calBalance(AVLNode<T> root){
+		int depth1 = (root.left == null) ? 0:calDepth(root.left);
+		int depth2 = (root.right == null) ? 0 : calDepth(root.right);
+		return depth1 - depth2; 
+	}
+	/**
+	 * 计算深度
+	 * 首先计算左孩子的深度，
+	 * 然后和右孩子的深度进行比较
+	 * 取到最大值
+	 * 直到取到最大值
+	 * @param node
+	 * @return
+	 */
+	private int calDepth(AVLNode<T> node){
+		int depth = 0;
+		if(node.left!=null)
+			depth = node.left.depth;
+		
+		if(node.right!=null && node.right.depth > depth)
+			depth = node.right.depth;
+		depth++;
+		return depth;
+	}
+	/**
+	 * 前序遍历
+	 */
+	public void disPlay(){
+		disPlay(root);
+	}
+	private void disPlay(AVLNode<T> root){
+		if(root!=null){
+			System.out.println(root.data);
+			disPlay(root.left);
+			disPlay(root.right);
+		}
+	}
+	/**
+	 * 中序遍历
+	 */
+	public void disPlayInorder(){
+		disPlayInorder(root);
+	}
+	private void disPlayInorder(AVLNode<T> root){
+		if(root != null) {
+			disPlayInorder(root.left);
+			System.out.print("  "+root.data+"  ");
+			disPlayInorder(root.right);
+		}
+	}
+	/**
+	 * 删除节点
+	 */
+	public void delete(T data){
+		root = delete( root, data);
+	}
+	private AVLNode<T> delete(AVLNode<T> root,T data){
+		if(root == null){
+			return root;
+		}
+		int result = data.compareTo(root.data);
+		if(result < 0){
+			
+			root.left = delete(root.left,data);
+			root.left.balance = calBalance(root.left);
+			root.left.depth = calDepth(root.left);
+		}else if( result > 0){
+			root.right = delete(root.right,data);
+			root.right.balance = calBalance(root.right);
+		}else if(root.left != null && root.right != null){
+			root.data = findMin(root.right).data;
+			root.right= delete(root.right,root.data);
+			root.right.depth = calDepth(root.right);
+		}else{
+			root = root.left!=null?root.left:root.right;
+		}
+		
+		/**
+		 * 加入左旋右旋的东西
+		 */
+		root.balance = calBalance(root);
+		if(root.balance >= 2){
+			if(root.left.balance == -1){
+				leftRotate(root.left);
+			}
+			rightRotate(root);
+		}
+		if(root.balance <= -2){
+			if(root.right.balance == -1){
+				rightRotate(root.right);
+			}
+			leftRotate(root);
+		}
+		root.balance = calBalance(root);
+		root.depth = calDepth(root);
+		return root;
+		
+	}
+	/**
+	 * 查找最小值
+	 * 对于我们每次只是为了找到一个相同的值的话直接就返回递归函数就好啦
+	 * return findMin(root.left);
+	 */
+	public T findMin(){
+		return findMin(root).data;
+	}
+	private AVLNode<T> findMin(AVLNode<T> root){
+//		if(root.left == null){
+//			return root;
+//		}
+//		root.left = findMin(root.left);
+//		return root;
+		if(root == null){
+			return null;
+		}else if(root.left == null){
+			return root;
+		}
+		return findMin(root.left);
+	}
+}

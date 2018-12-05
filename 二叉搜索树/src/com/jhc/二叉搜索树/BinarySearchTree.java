@@ -122,6 +122,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
 		}
 		int result = value.compareTo(root.data);
 		if(result < 0){
+			
 			root.left = remove(root.left,value);
 		}else if(result > 0){
 			root.right = remove(root.right,value);

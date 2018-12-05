@@ -1,0 +1,39 @@
+package com.jhc.test2;
+
+public class AVLTree<T extends Comparable> {
+	private AVLNode<T> root = null;
+	class AVLNode<T extends Comparable>{
+		T data;
+		AVLNode<T> parent;
+		AVLNode<T> left;
+		AVLNode<T> right;
+		int depth;
+		int balance;
+		public AVLNode(T data){
+			this.data = data;
+			left = null;
+			right = null;
+			depth = 1;
+			balance = 0;
+			
+		}
+	}
+	public int calDepth(AVLNode<T> node){
+		int depth = 0;
+		if(node.left != null){
+			depth = node.left.depth;
+		}
+		if(node.right != null && node.right.depth > depth){
+			depth = node.right.depth;
+		}
+		depth++;
+		return depth;
+	}
+	public int calBalance(AVLNode<T> node){
+		int leftDepth = (node.left != null)?node.left.depth:0;
+		int rightDepth = (node.right != null)?node.right.depth:0;
+		return leftDepth - rightDepth;
+	}
+	
+
+}

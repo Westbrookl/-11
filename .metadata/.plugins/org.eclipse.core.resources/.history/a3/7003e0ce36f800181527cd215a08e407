@@ -1,0 +1,172 @@
+package com.jhc.test2;
+
+public class AVLTree<T extends Comparable> {
+	private AVLNode<T> root = null;
+	class AVLNode<T extends Comparable>{
+		T data;
+		AVLNode<T> parent;
+		AVLNode<T> left;
+		AVLNode<T> right;
+		int depth;
+		int balance;
+		public AVLNode(T data){
+			this.data = data;
+			left = null;
+			right = null;
+			depth = 1;
+			balance = 0;
+			
+		}
+	}
+	public int calDepth(AVLNode<T> node){
+		int depth = 0;
+		if(node.left != null){
+			depth = node.left.depth;
+		}
+		if(node.right != null && node.right.depth > depth){
+			depth = node.right.depth;
+		}
+		depth++;
+		return depth;
+	}
+	public int calBalance(AVLNode<T> node){
+		int leftDepth = (node.left != null)?node.left.depth:0;
+		int rightDepth = (node.right != null)?node.right.depth:0;
+		return leftDepth - rightDepth;
+	}
+	public void insert(T data){
+		root = insert(data,root);
+	}
+	private AVLNode<T> insert(T data,AVLNode<T> node){
+		if(node == null){
+			return new AVLNode<T>(data);
+		}
+		int result = data.compareTo(node.data);
+		if(result < 0){
+			root.left = insert(data,root.left);
+			int balance = calBalance(root.left);
+			if(balance == 2 || balance == -2){
+				if(balance == 2){
+					 root.left = rightRotate(root.left);
+				}else{
+					root.left = leftRightRotate(root.left);
+				}
+			}
+		}else if(result > 0){
+			root.right = insert(data,root.right);
+			int balance = calBalance(root.right);
+			if(balance == 2 || balance == -2){
+				if(balance == 2){
+					root.right = rightLeftRotate(root.right);
+				}else {
+					root.right = leftRotate(root.right);
+				}
+			}
+			
+		}
+		node.depth = calDepth(node);
+		node.balance = calBalance(node);
+		
+		return node;
+		
+	}
+	/**
+	 * 右旋
+	 * 左子为父
+	 * 父变右子
+	 * 右孙变左孙
+	 * @param node
+	 * @return
+	 */
+	private AVLNode<T> rightRotate(AVLNode<T> node){
+		AVLNode<T> parent = node.parent,
+				leftSon = node.left,
+				rightGrandSon = leftSon.right;
+		leftSon.parent = parent;
+		if(parent.left == node){
+			parent.left = leftSon;
+		}else if(parent.right == node){
+			parent.right = leftSon;
+		}
+		leftSon.right = node;
+		node.parent = leftSon;
+		
+		node.left = rightGrandSon;
+		if(rightGrandSon != null){		
+			rightGrandSon.parent = node;
+		}
+		node.depth = calDepth(node);
+		node.balance = calBalance(node);
+		
+		leftSon.depth = calDepth(leftSon);
+		leftSon.balance = calBalance(leftSon);
+		
+		return leftSon;
+	} 
+	/**
+	 * 双旋转
+	 */
+	private AVLNode<T> leftRightRotate(AVLNode<T> node){
+		node.left = leftRotate(node.left);
+		return rightRotate(node);
+	}
+	/**
+	 * 左旋转
+		右子变父
+		父变左子
+		左孙子变成右孙子
+	 */
+	private AVLNode<T> leftRotate(AVLNode<T> node){
+		AVLNode<T> rightSon = node.right,
+				   parent = node.parent,
+				   leftGrandSon = rightSon.right;
+		rightSon.parent = parent;
+		if(parent.left == node){
+			parent.left = rightSon;
+		}else if( parent.right == node){
+			parent.right = rightSon;
+		}
+		rightSon.left = node;
+		node.parent = rightSon;
+		/**
+		 * 左孙子变成右孙子
+		 */
+		node.right = leftGrandSon;
+		if( leftGrandSon != null){
+			leftGrandSon.parent = node;
+		}
+		node.balance = calBalance(node);
+		node.depth = calDepth(node);
+		/**
+		 * 
+		 */
+		rightSon.depth = calDepth(rightSon);
+		rightSon.balance = calBalance(rightSon);
+		return rightSon;
+	}
+	private AVLNode<T> rightLeftRotate(AVLNode<T> node){
+		node.right = rightRotate(node.right);
+		return leftRotate(node);
+	}
+	public void preOrder(){
+		 preOrder(root);
+	}
+	private void preOrder(AVLNode<T> node){
+		if(node != null){
+			System.out.println(node.data+" ");
+			preOrder(node.left);
+			preOrder(node.right);
+		}
+	}
+	public  void midOrder(){
+		midOrder(root);
+	}
+	public void midOrder(AVLNode<T> node){
+		if(node != null){
+			midOrder(node.left);
+			System.out.println(node.data);
+			midOrder(node.right);
+		}
+	}
+	
+}

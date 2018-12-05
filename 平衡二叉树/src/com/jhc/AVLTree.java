@@ -195,4 +195,73 @@ public class AVLTree<T extends Comparable> {
 			disPlayInorder(root.right);
 		}
 	}
+	/**
+	 * 删除节点
+	 */
+	public void delete(T data){
+		root = delete( root, data);
+	}
+	private AVLNode<T> delete(AVLNode<T> root,T data){
+		if(root == null){
+			return root;
+		}
+		int result = data.compareTo(root.data);
+		if(result < 0){
+			
+			root.left = delete(root.left,data);
+			root.left.balance = calBalance(root.left);
+			root.left.depth = calDepth(root.left);
+		}else if( result > 0){
+			root.right = delete(root.right,data);
+			root.right.balance = calBalance(root.right);
+			root.right.depth = calDepth(root.right);
+		}else if(root.left != null && root.right != null){
+			root.data = findMin(root.right).data;
+			root.right= delete(root.right,root.data);			
+		}else{
+			root = root.left!=null?root.left:root.right;
+		}
+		
+		/**
+		 * 加入左旋右旋的东西
+		 */
+		root.balance = calBalance(root);
+		if(root.balance >= 2){
+			if(root.left.balance == -1){
+				leftRotate(root.left);
+			}
+			rightRotate(root);
+		}
+		if(root.balance <= -2){
+			if(root.right.balance == -1){
+				rightRotate(root.right);
+			}
+			leftRotate(root);
+		}
+		root.balance = calBalance(root);
+		root.depth = calDepth(root);
+		return root;
+		
+	}
+	/**
+	 * 查找最小值
+	 * 对于我们每次只是为了找到一个相同的值的话直接就返回递归函数就好啦
+	 * return findMin(root.left);
+	 */
+	public T findMin(){
+		return findMin(root).data;
+	}
+	private AVLNode<T> findMin(AVLNode<T> root){
+//		if(root.left == null){
+//			return root;
+//		}
+//		root.left = findMin(root.left);
+//		return root;
+		if(root == null){
+			return null;
+		}else if(root.left == null){
+			return root;
+		}
+		return findMin(root.left);
+	}
 }
